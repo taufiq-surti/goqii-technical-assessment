@@ -1,0 +1,5 @@
+{$APP_DOMAIN} {
+    @admin path /phpmyadmin /phpmyadmin/*
+    respond @admin 404
+    reverse_proxy web:8080
+}

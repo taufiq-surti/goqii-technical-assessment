@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+node_modules
+vendor
+dist
+backups
+*.log
+*.pem
+*.key

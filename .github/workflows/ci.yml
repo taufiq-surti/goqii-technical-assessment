@@ -1,0 +1,27 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MYSQL_PASSWORD: ci-placeholder-not-a-real-secret
+      MYSQL_ROOT_PASSWORD: ci-root-placeholder-not-a-real-secret
+      JWT_SECRET: ci-placeholder-at-least-32-bytes-not-a-real-secret
+      APP_DOMAIN: example.invalid
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PHP and AI response parsing
+        run: |
+          php -l api.php
+          php -l ai.php
+          php tests/ai_test.php
+      - name: Validate Node and Compose
+        run: |
+          node --check node_endpoint.js
+          docker compose config --quiet
+          docker compose -f deploy/compose.cloud.yml config --quiet
+      - name: Build API and React containers
+        run: docker compose build api web

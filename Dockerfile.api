@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+FROM composer:2 AS composer
+FROM php:8.3-apache
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+RUN apt-get update && apt-get install -y --no-install-recommends libonig-dev unzip \
+    && docker-php-ext-install pdo_mysql mbstring && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/goqii
+RUN printf '%s' '{"require":{"firebase/php-jwt":"7.2.1"}}' > composer.json \
+    && composer install --no-dev --prefer-dist --no-interaction --classmap-authoritative
+COPY api.php ai.php ./
+RUN mkdir -p /var/www/html/api \
+    && printf '%s\n' '<?php require "/opt/goqii/api.php";' > /var/www/html/api/index.php \
+    && printf '%s\n' '<Directory /var/www/html>' 'Options -Indexes' 'AllowOverride None' 'RewriteEngine On' 'RewriteRule ^api(?:/.*)?$ /api/index.php [END]' 'CGIPassAuth On' '</Directory>' 'ServerTokens Prod' 'ServerSignature Off' 'LimitRequestBody 16384' > /etc/apache2/conf-available/goqii.conf \
+    && a2enconf goqii \
+    && printf '%s\n' 'expose_php=Off' 'display_errors=Off' 'log_errors=On' 'date.timezone=UTC' > /usr/local/etc/php/conf.d/goqii.ini

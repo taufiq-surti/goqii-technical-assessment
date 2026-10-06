@@ -1,0 +1,39 @@
+# Local secrets (keep sanitized examples trackable)
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+
+# Dependencies
+node_modules/
+vendor/
+
+# Generated builds and test output
+dist/
+build/
+coverage/
+.vite/
+.cache/
+.phpunit.cache/
+.phpunit.result.cache
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Local database files and backups (keep schema.sql)
+mysql_data/
+backups/
+*.sql.gz
+*.dump
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
